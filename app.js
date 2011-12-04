@@ -55,7 +55,7 @@ function osvezi(cb) {
   deloi.stanje = [];
   deloi.skupaj = 0;
   var r = new api_request('http', 'www.dvk.gov.si');
-  r.get('/volitve/dz2008/rez.csv').on('reply', function(reply, res) {
+  r.get('/volitve/dz2011/rez.csv').on('reply', function(reply, res) {
       csv()
       .from(reply)
       .transform(function(data){
