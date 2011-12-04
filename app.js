@@ -8,6 +8,7 @@ var express = require('express')
   , api_request = require('api_request')
   , csv = require('csv')
   , zadnja = {}
+  , livesedaj = 0
 
 var app = module.exports = express.createServer();
 io = require('socket.io').listen(app)
@@ -50,12 +51,21 @@ console.log("Express server listening on port %d in %s mode", app.address().port
 
 setInterval(osvezi(function(data) {
   io.emit("stanje",data);
+  io.emit("live",livesedaj);
   zadnja=data;
-}),1000*60)
+}),1000*30)
 
 io.sockets.on('connection', function (socket) {
+    livesedaj++;
     socket.emit("stanje",zadnja);
+    socket.emit("live",livesedaj);
+    socket.broadcast.emit("live",livesedaj);
+    socket.on('disconnect', function (disc) {
+        livesedaj--;
+        socket.broadcast.emit("live",livesedaj);
+    });
 });
+
 
 function osvezi(cb) {
   var deloi = {};

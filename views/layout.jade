@@ -12,10 +12,17 @@ html
     script(src="/javascripts/jquery.tablesorter.min.js")
     script
       $(function() {
-          var socket = io.connect('http://delo.dz0ny.info:3000');
+          var socket = io.connect();
+          var r = Raphael("holder");
+          
           socket.on('stanje', function (data) {
-            izrisi(data.legenda,data.stanje,data.skupaj)
+            izrisi(data.legenda,data.stanje)
             tabela(data)
+            $("#glasov").text("Preštetih glasov:" +data.skupaj)
+          });
+
+          socket.on('live', function (data) {
+            $("#live").text("Trenutno uporabnikov:"+data)
           });
 
           $.template(
@@ -26,14 +33,14 @@ html
           function tabela(data){
               $("#tocno tbody").empty();
               $.tmpl( "stranka", data.stranke ).appendTo( $("#tocno tbody") );
-              $("table#tocno").tablesorter({ sortList: [[1,0]] });
+              $("table#tocno").tablesorter({ sortList: [[1,1]] });
           }
 
-          function izrisi(legenda,stanje, vseh){
-            var r = Raphael("holder"),
-                pie = r.piechart(130, 150, 120, 
-                stanje, 
-                { legend: legenda, legendpos: "east"});
+          function izrisi(legenda,stanje){
+            r.clear()
+            var pie = r.piechart(130, 150, 120, 
+            stanje, 
+            { legend: legenda, legendpos: "east"});
 
             pie.hover(function () {
                 this.sector.stop();
@@ -58,7 +65,12 @@ html
       .container
             .content
               .page-header
-                h1 Volitve 2011
+                h1 Volitve 2011 
             .row
                 .span14
+                  h4#glasov
                 | !{body}
+            .footer
+                h6#live
+                h5 Vir podatkov 
+                    a(href="http://volitve.gov.si/dz2011/") http://volitve.gov.si/dz2011/
