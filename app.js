@@ -51,7 +51,7 @@ console.log("Express server listening on port %d in %s mode", app.address().port
 setInterval(osvezi(function(data) {
   io.emit("stanje",data);
   zadnja=data;
-}),1000*60*2)
+}),1000*60)
 
 io.sockets.on('connection', function (socket) {
     socket.emit("stanje",zadnja);
@@ -74,7 +74,7 @@ function osvezi(cb) {
       .on('data',function(data,index){
         if (index>1 && index < (deloi.strank+2) ) {
           deloi.stranke.push({ime: data[0].split(";")[1], glasov:0, sedezev:0})
-          deloi.legenda.push("%%.% " + data[0].split(";")[1])
+          deloi.legenda.push("%%.%% " + data[0].split(";")[1])
         };
         if (index>(deloi.strank+2) && index < (deloi.strank+2)*2 ) {
           var rindex = index-(deloi.strank)-3;
